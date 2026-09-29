@@ -3,13 +3,15 @@ import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import {
   closeDb,
-  createExpense,
-  deleteExpense,
-  ExpenseFilter,
-  ExpenseInput,
+  createTransaction,
+  deleteTransaction,
+  getBalanceSummary,
   listCategoryOptions,
-  listExpenses,
-  updateExpense,
+  listIncomeCategoryOptions,
+  listTransactions,
+  TransactionFilter,
+  TransactionInput,
+  updateTransaction,
 } from './db';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -41,12 +43,18 @@ const createWindow = () => {
 };
 
 ipcMain.handle('categories:list', () => listCategoryOptions());
-ipcMain.handle('expenses:list', (_event, filter?: ExpenseFilter) => listExpenses(filter));
-ipcMain.handle('expenses:create', (_event, input: ExpenseInput) => createExpense(input));
-ipcMain.handle('expenses:update', (_event, id: number, input: ExpenseInput) =>
-  updateExpense(id, input),
+ipcMain.handle('incomeCategories:list', () => listIncomeCategoryOptions());
+ipcMain.handle('transactions:list', (_event, filter?: TransactionFilter) =>
+  listTransactions(filter),
 );
-ipcMain.handle('expenses:delete', (_event, id: number) => deleteExpense(id));
+ipcMain.handle('transactions:create', (_event, input: TransactionInput) =>
+  createTransaction(input),
+);
+ipcMain.handle('transactions:update', (_event, id: number, input: TransactionInput) =>
+  updateTransaction(id, input),
+);
+ipcMain.handle('transactions:delete', (_event, id: number) => deleteTransaction(id));
+ipcMain.handle('transactions:balance', () => getBalanceSummary());
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

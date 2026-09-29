@@ -32,25 +32,30 @@ rule for the duration of this project, not a one-time preference:
 
 ## 2. Project Overview
 
-A desktop app for recording and categorizing personal expenses in US Dollars.
-The app runs on Windows. The core action a user performs, over and
-over, is: log an expense with an amount, a date, and a category — quickly and
-without friction.
+A desktop app for recording personal expenses and income in US Dollars, and
+showing the resulting balance. The app runs on Windows. The core action a user
+performs, over and over, is: log a transaction (an expense or income) with an
+amount, a date, and a category — quickly and without friction.
 
 ## 3. Functional Requirements
 
-- **Add an expense**: amount (USD), date, primary category, subcategory, and
-  optionally a note/description and a merchant/payee name.
-- **Edit an expense** after it's been recorded.
-- **Delete an expense**.
-- **Browse / search / filter** past expenses by date range, primary category,
-  and subcategory.
-- **Basic summaries** (e.g., total spend by category, total spend by month) —
-  this is a "nice to have" for the first version, not a hard requirement. It can
-  be added after the core add/edit/delete/browse features work.
+- **Add a transaction**: either an expense or income, with amount (USD), date,
+  a category (see Section 4), and optionally a note/description and a
+  merchant/payee/payer name.
+- **Edit a transaction** after it's been recorded.
+- **Delete a transaction**.
+- **Browse / search / filter** past transactions by date range, type
+  (expense/income), and category/subcategory.
+- Expenses and income appear together in one combined list, distinguished by
+  color (and filterable by type), rather than as two separate lists.
+- **Balance**: the app shows the current balance (total income minus total
+  expenses, starting from $0 — there is no separate "starting balance" concept
+  for v1), along with total income and total expenses.
 - All amounts are in USD only.
 
 ## 4. Category System
+
+### 4a. Expense categories
 
 A two-level system: each expense has one **primary category** and one
 **subcategory** within it. This starting list can be freely renamed, added to,
@@ -69,6 +74,19 @@ change it anytime without needing to ask Claude to "propose options."
 | Financial | Debt Payments, Savings/Investments, Bank & ATM Fees, Taxes |
 | Family, Pets & Giving | Childcare, Pet Care, Gifts & Donations |
 | Miscellaneous | Other/Uncategorized |
+
+### 4b. Income categories
+
+A single-level system: each income entry has one category (no subcategories).
+Like the expense categories, this list is just data and can be renamed/changed
+freely without needing a technical discussion.
+
+- Salary & Wages
+- Freelance & Business
+- Investment & Interest
+- Gifts & Support
+- Refunds & Reimbursements
+- Other Income
 
 ## 5. Non-Functional Requirements
 
@@ -122,6 +140,7 @@ To keep the first version realistic and shippable, the following are explicitly
 - [x] Add/edit/delete expense UI
 - [x] Browse/filter expense history UI (filter by date range, category, and subcategory)
 - [x] Packaging for Windows (Squirrel installer via Electron Forge, verified working)
+- [x] Income tracking, combined expense/income transaction list, and balance display
 
 Each unchecked item above involves technical decisions and, per the Working
 Agreement in Section 1, should begin with Claude presenting options to the owner

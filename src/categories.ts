@@ -52,3 +52,12 @@ export const CATEGORY_SEED: CategorySeed[] = [
     subcategories: ['Other/Uncategorized'],
   },
 ];
+
+export const INCOME_CATEGORY_SEED: string[] = [
+  'Salary & Wages',
+  'Freelance & Business',
+  'Investment & Interest',
+  'Gifts & Support',
+  'Refunds & Reimbursements',
+  'Other Income',
+];

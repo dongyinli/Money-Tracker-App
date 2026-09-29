@@ -1,11 +1,20 @@
-import type { CategoryOption, Expense, ExpenseFilter, ExpenseInput } from './db';
+import type {
+  BalanceSummary,
+  CategoryOption,
+  IncomeCategoryOption,
+  Transaction,
+  TransactionFilter,
+  TransactionInput,
+} from './db';
 
 export interface ExpenseTrackerApi {
   listCategoryOptions: () => Promise<CategoryOption[]>;
-  listExpenses: (filter?: ExpenseFilter) => Promise<Expense[]>;
-  createExpense: (input: ExpenseInput) => Promise<Expense>;
-  updateExpense: (id: number, input: ExpenseInput) => Promise<Expense>;
-  deleteExpense: (id: number) => Promise<void>;
+  listIncomeCategoryOptions: () => Promise<IncomeCategoryOption[]>;
+  listTransactions: (filter?: TransactionFilter) => Promise<Transaction[]>;
+  createTransaction: (input: TransactionInput) => Promise<Transaction>;
+  updateTransaction: (id: number, input: TransactionInput) => Promise<Transaction>;
+  deleteTransaction: (id: number) => Promise<void>;
+  getBalanceSummary: () => Promise<BalanceSummary>;
 }
 
 declare global {

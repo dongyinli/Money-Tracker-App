@@ -1,13 +1,23 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { CategoryOption, Expense, ExpenseFilter, ExpenseInput } from './db';
+import type {
+  BalanceSummary,
+  CategoryOption,
+  IncomeCategoryOption,
+  Transaction,
+  TransactionFilter,
+  TransactionInput,
+} from './db';
 
 contextBridge.exposeInMainWorld('api', {
   listCategoryOptions: (): Promise<CategoryOption[]> => ipcRenderer.invoke('categories:list'),
-  listExpenses: (filter?: ExpenseFilter): Promise<Expense[]> =>
-    ipcRenderer.invoke('expenses:list', filter),
-  createExpense: (input: ExpenseInput): Promise<Expense> =>
-    ipcRenderer.invoke('expenses:create', input),
-  updateExpense: (id: number, input: ExpenseInput): Promise<Expense> =>
-    ipcRenderer.invoke('expenses:update', id, input),
-  deleteExpense: (id: number): Promise<void> => ipcRenderer.invoke('expenses:delete', id),
+  listIncomeCategoryOptions: (): Promise<IncomeCategoryOption[]> =>
+    ipcRenderer.invoke('incomeCategories:list'),
+  listTransactions: (filter?: TransactionFilter): Promise<Transaction[]> =>
+    ipcRenderer.invoke('transactions:list', filter),
+  createTransaction: (input: TransactionInput): Promise<Transaction> =>
+    ipcRenderer.invoke('transactions:create', input),
+  updateTransaction: (id: number, input: TransactionInput): Promise<Transaction> =>
+    ipcRenderer.invoke('transactions:update', id, input),
+  deleteTransaction: (id: number): Promise<void> => ipcRenderer.invoke('transactions:delete', id),
+  getBalanceSummary: (): Promise<BalanceSummary> => ipcRenderer.invoke('transactions:balance'),
 });

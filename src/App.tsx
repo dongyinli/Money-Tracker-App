@@ -1,58 +1,84 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { CategoryOption, Expense, ExpenseFilter, ExpenseInput } from './db';
-import { ExpenseFilters } from './ExpenseFilters';
-import { ExpenseForm } from './ExpenseForm';
-import { ExpenseList } from './ExpenseList';
+import type {
+  BalanceSummary,
+  CategoryOption,
+  IncomeCategoryOption,
+  Transaction,
+  TransactionFilter,
+  TransactionInput,
+} from './db';
+import { TransactionFilters } from './TransactionFilters';
+import { TransactionForm } from './TransactionForm';
+import { TransactionList } from './TransactionList';
+
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
 
 export function App() {
   const [categoryOptions, setCategoryOptions] = useState<CategoryOption[]>([]);
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
-  const [filter, setFilter] = useState<ExpenseFilter>({});
+  const [incomeCategoryOptions, setIncomeCategoryOptions] = useState<IncomeCategoryOption[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [balance, setBalance] = useState<BalanceSummary | null>(null);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [filter, setFilter] = useState<TransactionFilter>({});
   const [error, setError] = useState<string | null>(null);
 
-  const refreshExpenses = useCallback(
-    (currentFilter: ExpenseFilter) => {
-      window.api.listExpenses(currentFilter).then(setExpenses).catch((err) => setError(String(err)));
+  const refreshTransactions = useCallback(
+    (currentFilter: TransactionFilter) => {
+      window.api.listTransactions(currentFilter).then(setTransactions).catch((err) => setError(String(err)));
     },
     [],
   );
 
-  useEffect(() => {
-    window.api.listCategoryOptions().then(setCategoryOptions).catch((err) => setError(String(err)));
+  const refreshBalance = useCallback(() => {
+    window.api.getBalanceSummary().then(setBalance).catch((err) => setError(String(err)));
   }, []);
 
   useEffect(() => {
-    refreshExpenses(filter);
-  }, [filter, refreshExpenses]);
+    window.api.listCategoryOptions().then(setCategoryOptions).catch((err) => setError(String(err)));
+    window.api
+      .listIncomeCategoryOptions()
+      .then(setIncomeCategoryOptions)
+      .catch((err) => setError(String(err)));
+    refreshBalance();
+  }, [refreshBalance]);
 
-  const handleSubmit = (input: ExpenseInput) => {
-    const request = editingExpense
-      ? window.api.updateExpense(editingExpense.id, input)
-      : window.api.createExpense(input);
+  useEffect(() => {
+    refreshTransactions(filter);
+  }, [filter, refreshTransactions]);
+
+  const handleSubmit = (input: TransactionInput) => {
+    const request = editingTransaction
+      ? window.api.updateTransaction(editingTransaction.id, input)
+      : window.api.createTransaction(input);
 
     request
       .then(() => {
-        setEditingExpense(null);
-        refreshExpenses(filter);
+        setEditingTransaction(null);
+        refreshTransactions(filter);
+        refreshBalance();
       })
       .catch((err) => setError(String(err)));
   };
 
-  const handleDelete = (expense: Expense) => {
+  const handleDelete = (transaction: Transaction) => {
+    const kind = transaction.type === 'income' ? 'income' : 'expense';
     const confirmed = window.confirm(
-      `Delete this $${expense.amountUsd.toFixed(2)} expense from ${expense.expenseDate}?`,
+      `Delete this $${transaction.amountUsd.toFixed(2)} ${kind} from ${transaction.transactionDate}?`,
     );
     if (!confirmed) {
       return;
     }
     window.api
-      .deleteExpense(expense.id)
+      .deleteTransaction(transaction.id)
       .then(() => {
-        if (editingExpense?.id === expense.id) {
-          setEditingExpense(null);
+        if (editingTransaction?.id === transaction.id) {
+          setEditingTransaction(null);
         }
-        refreshExpenses(filter);
+        refreshTransactions(filter);
+        refreshBalance();
       })
       .catch((err) => setError(String(err)));
   };
@@ -63,17 +89,61 @@ export function App() {
 
       {error && <p style={{ color: 'crimson' }}>Error: {error}</p>}
 
-      <ExpenseForm
+      {balance && (
+        <div
+          style={{
+            display: 'flex',
+            gap: '2rem',
+            padding: '1rem',
+            marginBottom: '1.5rem',
+            border: '1px solid #ddd',
+            borderRadius: '0.5rem',
+          }}
+        >
+          <div>
+            <div style={{ fontSize: '0.85rem', color: '#666' }}>Balance</div>
+            <div
+              style={{
+                fontSize: '1.5rem',
+                fontWeight: 700,
+                color: balance.balance >= 0 ? 'seagreen' : 'crimson',
+              }}
+            >
+              {currencyFormatter.format(balance.balance)}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: '0.85rem', color: '#666' }}>Total Income</div>
+            <div style={{ fontSize: '1.1rem', color: 'seagreen' }}>
+              {currencyFormatter.format(balance.totalIncome)}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: '0.85rem', color: '#666' }}>Total Expenses</div>
+            <div style={{ fontSize: '1.1rem', color: 'crimson' }}>
+              {currencyFormatter.format(balance.totalExpense)}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <TransactionForm
         categoryOptions={categoryOptions}
-        editingExpense={editingExpense}
+        incomeCategoryOptions={incomeCategoryOptions}
+        editingTransaction={editingTransaction}
         onSubmit={handleSubmit}
-        onCancelEdit={() => setEditingExpense(null)}
+        onCancelEdit={() => setEditingTransaction(null)}
       />
 
-      <h2 style={{ marginTop: '2rem' }}>Expenses</h2>
-      <ExpenseFilters categoryOptions={categoryOptions} filter={filter} onChange={setFilter} />
+      <h2 style={{ marginTop: '2rem' }}>Transactions</h2>
+      <TransactionFilters
+        categoryOptions={categoryOptions}
+        incomeCategoryOptions={incomeCategoryOptions}
+        filter={filter}
+        onChange={setFilter}
+      />
       <div style={{ marginTop: '1rem' }}>
-        <ExpenseList expenses={expenses} onEdit={setEditingExpense} onDelete={handleDelete} />
+        <TransactionList transactions={transactions} onEdit={setEditingTransaction} onDelete={handleDelete} />
       </div>
     </div>
   );
