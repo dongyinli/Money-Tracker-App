@@ -7,7 +7,7 @@ import type {
   TransactionInput,
 } from './db';
 
-export interface ExpenseTrackerApi {
+export interface MoneyTrackerApi {
   listCategoryOptions: () => Promise<CategoryOption[]>;
   listIncomeCategoryOptions: () => Promise<IncomeCategoryOption[]>;
   listTransactions: (filter?: TransactionFilter) => Promise<Transaction[]>;
@@ -19,6 +19,6 @@ export interface ExpenseTrackerApi {
 
 declare global {
   interface Window {
-    api: ExpenseTrackerApi;
+    api: MoneyTrackerApi;
   }
 }

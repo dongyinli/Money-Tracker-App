@@ -85,7 +85,7 @@ export function App() {
 
   return (
     <div style={{ fontFamily: 'sans-serif', padding: '2rem', maxWidth: '48rem', margin: '0 auto' }}>
-      <h1>Expense Tracker</h1>
+      <h1>Money Tracker</h1>
 
       {error && <p style={{ color: 'crimson' }}>Error: {error}</p>}
 

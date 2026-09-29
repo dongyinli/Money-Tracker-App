@@ -1,4 +1,4 @@
-# Expense Tracker App — Project Documentation
+# Money Tracker App — Project Documentation
 
 This file is the source of truth for this project. Claude should re-read it at the
 start of every session working on this app.
