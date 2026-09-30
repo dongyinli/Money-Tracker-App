@@ -49,34 +49,30 @@ export function TransactionFilters({
     filter.incomeCategoryId;
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'end' }}>
-      <label>
+    <div className="filters">
+      <label className="field">
         From
         <input
           type="date"
           value={filter.startDate ?? ''}
           onChange={(e) => onChange({ ...filter, startDate: e.target.value || undefined })}
-          style={{ display: 'block' }}
+          className="input"
         />
       </label>
 
-      <label>
+      <label className="field">
         To
         <input
           type="date"
           value={filter.endDate ?? ''}
           onChange={(e) => onChange({ ...filter, endDate: e.target.value || undefined })}
-          style={{ display: 'block' }}
+          className="input"
         />
       </label>
 
-      <label>
+      <label className="field">
         Type
-        <select
-          value={filter.type ?? ''}
-          onChange={(e) => handleTypeChange(e.target.value)}
-          style={{ display: 'block' }}
-        >
+        <select value={filter.type ?? ''} onChange={(e) => handleTypeChange(e.target.value)} className="select">
           <option value="">All</option>
           <option value="expense">Expense</option>
           <option value="income">Income</option>
@@ -84,7 +80,7 @@ export function TransactionFilters({
       </label>
 
       {filter.type === 'income' && (
-        <label>
+        <label className="field">
           Income Source
           <select
             value={filter.incomeCategoryId ?? ''}
@@ -94,7 +90,7 @@ export function TransactionFilters({
                 incomeCategoryId: e.target.value ? Number(e.target.value) : undefined,
               })
             }
-            style={{ display: 'block' }}
+            className="select"
           >
             <option value="">All Sources</option>
             {incomeCategoryOptions.map((o) => (
@@ -108,12 +104,12 @@ export function TransactionFilters({
 
       {filter.type === 'expense' && (
         <>
-          <label>
+          <label className="field">
             Category
             <select
               value={filter.primaryCategoryId ?? ''}
               onChange={(e) => handlePrimaryChange(e.target.value)}
-              style={{ display: 'block' }}
+              className="select"
             >
               <option value="">All Categories</option>
               {primaryCategories.map(([id, name]) => (
@@ -124,7 +120,7 @@ export function TransactionFilters({
             </select>
           </label>
 
-          <label>
+          <label className="field">
             Subcategory
             <select
               value={filter.subcategoryId ?? ''}
@@ -134,7 +130,7 @@ export function TransactionFilters({
                   subcategoryId: e.target.value ? Number(e.target.value) : undefined,
                 })
               }
-              style={{ display: 'block' }}
+              className="select"
             >
               <option value="">All Subcategories</option>
               {subcategoriesForSelectedPrimary.map((o) => (
@@ -148,7 +144,7 @@ export function TransactionFilters({
       )}
 
       {hasActiveFilter && (
-        <button type="button" onClick={() => onChange({})}>
+        <button type="button" onClick={() => onChange({})} className="btn btn--ghost btn--small">
           Clear Filters
         </button>
       )}

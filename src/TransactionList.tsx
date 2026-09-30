@@ -20,56 +20,64 @@ function categoryLabel(transaction: Transaction): string {
 
 export function TransactionList({ transactions, onEdit, onDelete }: TransactionListProps) {
   if (transactions.length === 0) {
-    return <p>No transactions recorded yet.</p>;
+    return (
+      <div className="table-card">
+        <p className="empty-state">No transactions recorded yet.</p>
+      </div>
+    );
   }
 
   return (
-    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-      <thead>
-        <tr>
-          <th style={{ textAlign: 'left' }}>Date</th>
-          <th style={{ textAlign: 'left' }}>Type</th>
-          <th style={{ textAlign: 'right' }}>Amount</th>
-          <th style={{ textAlign: 'left' }}>Category</th>
-          <th style={{ textAlign: 'left' }}>Merchant/Payer</th>
-          <th style={{ textAlign: 'left' }}>Note</th>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        {transactions.map((transaction) => {
-          const isIncome = transaction.type === 'income';
-          return (
-            <tr key={transaction.id} style={{ borderTop: '1px solid #ddd' }}>
-              <td>{transaction.transactionDate}</td>
-              <td style={{ color: isIncome ? 'seagreen' : 'crimson' }}>
-                {isIncome ? 'Income' : 'Expense'}
-              </td>
-              <td
-                style={{
-                  textAlign: 'right',
-                  color: isIncome ? 'seagreen' : 'crimson',
-                  fontWeight: 600,
-                }}
-              >
-                {isIncome ? '+' : '-'}
-                {currencyFormatter.format(transaction.amountUsd)}
-              </td>
-              <td>{categoryLabel(transaction)}</td>
-              <td>{transaction.merchant ?? ''}</td>
-              <td>{transaction.note ?? ''}</td>
-              <td style={{ whiteSpace: 'nowrap' }}>
-                <button type="button" onClick={() => onEdit(transaction)}>
-                  Edit
-                </button>{' '}
-                <button type="button" onClick={() => onDelete(transaction)}>
-                  Delete
-                </button>
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+    <div className="table-card">
+      <table className="transactions-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th className="is-numeric">Amount</th>
+            <th>Category</th>
+            <th>Merchant/Payer</th>
+            <th>Note</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {transactions.map((transaction) => {
+            const isIncome = transaction.type === 'income';
+            return (
+              <tr key={transaction.id}>
+                <td>{transaction.transactionDate}</td>
+                <td>
+                  <span className={`badge ${isIncome ? 'badge--income' : 'badge--expense'}`}>
+                    {isIncome ? 'Income' : 'Expense'}
+                  </span>
+                </td>
+                <td className={`amount ${isIncome ? 'amount--income' : 'amount--expense'}`}>
+                  {isIncome ? '+' : '-'}
+                  {currencyFormatter.format(transaction.amountUsd)}
+                </td>
+                <td>{categoryLabel(transaction)}</td>
+                <td>{transaction.merchant ?? ''}</td>
+                <td>{transaction.note ?? ''}</td>
+                <td>
+                  <div className="row-actions">
+                    <button type="button" onClick={() => onEdit(transaction)} className="btn btn--ghost btn--small">
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onDelete(transaction)}
+                      className="btn btn--danger btn--small"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }

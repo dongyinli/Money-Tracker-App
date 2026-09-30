@@ -105,64 +105,66 @@ export function TransactionForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '0.75rem', maxWidth: '28rem' }}>
-      <h2>{editingTransaction ? 'Edit Transaction' : 'Add Transaction'}</h2>
+    <form onSubmit={handleSubmit} className="form">
+      <h2 className="form__title">{editingTransaction ? 'Edit Transaction' : 'Add Transaction'}</h2>
 
-      <div role="radiogroup" aria-label="Transaction type" style={{ display: 'flex', gap: '1rem' }}>
-        <label>
+      <div role="radiogroup" aria-label="Transaction type" className="type-toggle">
+        <label className="type-toggle__option">
           <input
             type="radio"
             name="type"
             value="expense"
             checked={type === 'expense'}
             onChange={() => setType('expense')}
-          />{' '}
+          />
           Expense
         </label>
-        <label>
+        <label className="type-toggle__option">
           <input
             type="radio"
             name="type"
             value="income"
             checked={type === 'income'}
             onChange={() => setType('income')}
-          />{' '}
+          />
           Income
         </label>
       </div>
 
-      <label>
-        Amount (USD)
-        <input
-          type="number"
-          min="0.01"
-          step="0.01"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          required
-          style={{ display: 'block', width: '100%' }}
-        />
-      </label>
+      <div className="form__row">
+        <label className="field">
+          Amount (USD)
+          <input
+            type="number"
+            min="0.01"
+            step="0.01"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+            className="input"
+          />
+        </label>
 
-      <label>
-        Date
-        <input
-          type="date"
-          value={transactionDate}
-          onChange={(e) => setTransactionDate(e.target.value)}
-          required
-          style={{ display: 'block', width: '100%' }}
-        />
-      </label>
+        <label className="field">
+          Date
+          <input
+            type="date"
+            value={transactionDate}
+            onChange={(e) => setTransactionDate(e.target.value)}
+            required
+            className="input"
+          />
+        </label>
+      </div>
 
       {type === 'expense' ? (
-        <label>
+        <label className="field">
           Category
           <select
             value={subcategoryId}
             onChange={(e) => setSubcategoryId(e.target.value)}
             required
-            style={{ display: 'block', width: '100%' }}
+            className="select"
           >
             <option value="" disabled>
               Select a category...
@@ -179,13 +181,13 @@ export function TransactionForm({
           </select>
         </label>
       ) : (
-        <label>
+        <label className="field">
           Income Source
           <select
             value={incomeCategoryId}
             onChange={(e) => setIncomeCategoryId(e.target.value)}
             required
-            style={{ display: 'block', width: '100%' }}
+            className="select"
           >
             <option value="" disabled>
               Select a source...
@@ -199,30 +201,29 @@ export function TransactionForm({
         </label>
       )}
 
-      <label>
-        {type === 'expense' ? 'Merchant/Payee (optional)' : 'Payer (optional)'}
-        <input
-          type="text"
-          value={merchant}
-          onChange={(e) => setMerchant(e.target.value)}
-          style={{ display: 'block', width: '100%' }}
-        />
-      </label>
+      <div className="form__row">
+        <label className="field">
+          {type === 'expense' ? 'Merchant/Payee (optional)' : 'Payer (optional)'}
+          <input
+            type="text"
+            value={merchant}
+            onChange={(e) => setMerchant(e.target.value)}
+            className="input"
+          />
+        </label>
 
-      <label>
-        Note (optional)
-        <input
-          type="text"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          style={{ display: 'block', width: '100%' }}
-        />
-      </label>
+        <label className="field">
+          Note (optional)
+          <input type="text" value={note} onChange={(e) => setNote(e.target.value)} className="input" />
+        </label>
+      </div>
 
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <button type="submit">{editingTransaction ? 'Save Changes' : 'Add Transaction'}</button>
+      <div className="form__actions">
+        <button type="submit" className="btn btn--primary">
+          {editingTransaction ? 'Save Changes' : 'Add Transaction'}
+        </button>
         {editingTransaction && (
-          <button type="button" onClick={onCancelEdit}>
+          <button type="button" onClick={onCancelEdit} className="btn btn--ghost">
             Cancel
           </button>
         )}

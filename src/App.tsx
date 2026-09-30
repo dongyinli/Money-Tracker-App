@@ -84,67 +84,55 @@ export function App() {
   };
 
   return (
-    <div style={{ fontFamily: 'sans-serif', padding: '2rem', maxWidth: '48rem', margin: '0 auto' }}>
-      <h1>Money Tracker</h1>
+    <div className="app">
+      <header className="app__header">
+        <h1 className="app__title">Money Tracker</h1>
+        <p className="app__subtitle">Track your income and expenses, all in one place.</p>
+      </header>
 
-      {error && <p style={{ color: 'crimson' }}>Error: {error}</p>}
+      {error && <div className="error-banner">Error: {error}</div>}
 
       {balance && (
-        <div
-          style={{
-            display: 'flex',
-            gap: '2rem',
-            padding: '1rem',
-            marginBottom: '1.5rem',
-            border: '1px solid #ddd',
-            borderRadius: '0.5rem',
-          }}
-        >
-          <div>
-            <div style={{ fontSize: '0.85rem', color: '#666' }}>Balance</div>
+        <div className="balance-panel">
+          <div className="balance-card balance-card--total">
+            <div className="balance-card__label">Balance</div>
             <div
-              style={{
-                fontSize: '1.5rem',
-                fontWeight: 700,
-                color: balance.balance >= 0 ? 'seagreen' : 'crimson',
-              }}
+              className={`balance-card__value ${balance.balance >= 0 ? 'is-positive' : 'is-negative'}`}
             >
               {currencyFormatter.format(balance.balance)}
             </div>
           </div>
-          <div>
-            <div style={{ fontSize: '0.85rem', color: '#666' }}>Total Income</div>
-            <div style={{ fontSize: '1.1rem', color: 'seagreen' }}>
-              {currencyFormatter.format(balance.totalIncome)}
-            </div>
+          <div className="balance-card balance-card--income">
+            <div className="balance-card__label">Total Income</div>
+            <div className="balance-card__value">{currencyFormatter.format(balance.totalIncome)}</div>
           </div>
-          <div>
-            <div style={{ fontSize: '0.85rem', color: '#666' }}>Total Expenses</div>
-            <div style={{ fontSize: '1.1rem', color: 'crimson' }}>
-              {currencyFormatter.format(balance.totalExpense)}
-            </div>
+          <div className="balance-card balance-card--expense">
+            <div className="balance-card__label">Total Expenses</div>
+            <div className="balance-card__value">{currencyFormatter.format(balance.totalExpense)}</div>
           </div>
         </div>
       )}
 
-      <TransactionForm
-        categoryOptions={categoryOptions}
-        incomeCategoryOptions={incomeCategoryOptions}
-        editingTransaction={editingTransaction}
-        onSubmit={handleSubmit}
-        onCancelEdit={() => setEditingTransaction(null)}
-      />
-
-      <h2 style={{ marginTop: '2rem' }}>Transactions</h2>
-      <TransactionFilters
-        categoryOptions={categoryOptions}
-        incomeCategoryOptions={incomeCategoryOptions}
-        filter={filter}
-        onChange={setFilter}
-      />
-      <div style={{ marginTop: '1rem' }}>
-        <TransactionList transactions={transactions} onEdit={setEditingTransaction} onDelete={handleDelete} />
+      <div className="card">
+        <TransactionForm
+          categoryOptions={categoryOptions}
+          incomeCategoryOptions={incomeCategoryOptions}
+          editingTransaction={editingTransaction}
+          onSubmit={handleSubmit}
+          onCancelEdit={() => setEditingTransaction(null)}
+        />
       </div>
+
+      <h2 className="section-title">Transactions</h2>
+      <div className="card" style={{ marginBottom: '1rem' }}>
+        <TransactionFilters
+          categoryOptions={categoryOptions}
+          incomeCategoryOptions={incomeCategoryOptions}
+          filter={filter}
+          onChange={setFilter}
+        />
+      </div>
+      <TransactionList transactions={transactions} onEdit={setEditingTransaction} onDelete={handleDelete} />
     </div>
   );
 }
