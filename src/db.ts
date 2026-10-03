@@ -313,15 +313,35 @@ export interface BalanceSummary {
   balance: number;
 }
 
-export function getBalanceSummary(): BalanceSummary {
+export interface BalancePeriod {
+  startDate?: string;
+  endDate?: string;
+}
+
+export function getBalanceSummary(period: BalancePeriod = {}): BalanceSummary {
+  const conditions: string[] = [];
+  const params: string[] = [];
+
+  if (period.startDate) {
+    conditions.push('transaction_date >= ?');
+    params.push(period.startDate);
+  }
+  if (period.endDate) {
+    conditions.push('transaction_date <= ?');
+    params.push(period.endDate);
+  }
+
+  const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
   const row = getDb()
     .prepare(
       `SELECT
          COALESCE(SUM(CASE WHEN type = 'income' THEN amount_usd ELSE 0 END), 0) AS totalIncome,
          COALESCE(SUM(CASE WHEN type = 'expense' THEN amount_usd ELSE 0 END), 0) AS totalExpense
-       FROM transactions`,
+       FROM transactions
+       ${whereClause}`,
     )
-    .get() as { totalIncome: number; totalExpense: number };
+    .get(...params) as { totalIncome: number; totalExpense: number };
 
   return {
     totalIncome: row.totalIncome,

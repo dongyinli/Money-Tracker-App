@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import {
+  BalancePeriod,
   closeDb,
   createTransaction,
   deleteTransaction,
@@ -51,7 +52,9 @@ ipcMain.handle('transactions:update', (_event, id: number, input: TransactionInp
   updateTransaction(id, input),
 );
 ipcMain.handle('transactions:delete', (_event, id: number) => deleteTransaction(id));
-ipcMain.handle('transactions:balance', () => getBalanceSummary());
+ipcMain.handle('transactions:balance', (_event, period?: BalancePeriod) =>
+  getBalanceSummary(period),
+);
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

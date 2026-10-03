@@ -1,4 +1,5 @@
 import type {
+  BalancePeriod,
   BalanceSummary,
   CategoryOption,
   IncomeCategoryOption,
@@ -14,7 +15,7 @@ export interface MoneyTrackerApi {
   createTransaction: (input: TransactionInput) => Promise<Transaction>;
   updateTransaction: (id: number, input: TransactionInput) => Promise<Transaction>;
   deleteTransaction: (id: number) => Promise<void>;
-  getBalanceSummary: () => Promise<BalanceSummary>;
+  getBalanceSummary: (period?: BalancePeriod) => Promise<BalanceSummary>;
 }
 
 declare global {

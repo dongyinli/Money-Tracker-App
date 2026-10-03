@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import type {
+  BalancePeriod,
   BalanceSummary,
   CategoryOption,
   IncomeCategoryOption,
@@ -19,5 +20,6 @@ contextBridge.exposeInMainWorld('api', {
   updateTransaction: (id: number, input: TransactionInput): Promise<Transaction> =>
     ipcRenderer.invoke('transactions:update', id, input),
   deleteTransaction: (id: number): Promise<void> => ipcRenderer.invoke('transactions:delete', id),
-  getBalanceSummary: (): Promise<BalanceSummary> => ipcRenderer.invoke('transactions:balance'),
+  getBalanceSummary: (period?: BalancePeriod): Promise<BalanceSummary> =>
+    ipcRenderer.invoke('transactions:balance', period),
 });

@@ -16,6 +16,28 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
   currency: 'USD',
 });
 
+function formatDateLabel(dateStr: string): string {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+function formatPeriodLabel(filter: TransactionFilter): string {
+  if (filter.startDate && filter.endDate) {
+    return `${formatDateLabel(filter.startDate)} – ${formatDateLabel(filter.endDate)}`;
+  }
+  if (filter.startDate) {
+    return `Since ${formatDateLabel(filter.startDate)}`;
+  }
+  if (filter.endDate) {
+    return `Through ${formatDateLabel(filter.endDate)}`;
+  }
+  return 'All time';
+}
+
 export function App() {
   const [categoryOptions, setCategoryOptions] = useState<CategoryOption[]>([]);
   const [incomeCategoryOptions, setIncomeCategoryOptions] = useState<IncomeCategoryOption[]>([]);
@@ -32,8 +54,11 @@ export function App() {
     [],
   );
 
-  const refreshBalance = useCallback(() => {
-    window.api.getBalanceSummary().then(setBalance).catch((err) => setError(String(err)));
+  const refreshBalance = useCallback((currentFilter: TransactionFilter) => {
+    window.api
+      .getBalanceSummary({ startDate: currentFilter.startDate, endDate: currentFilter.endDate })
+      .then(setBalance)
+      .catch((err) => setError(String(err)));
   }, []);
 
   useEffect(() => {
@@ -42,12 +67,12 @@ export function App() {
       .listIncomeCategoryOptions()
       .then(setIncomeCategoryOptions)
       .catch((err) => setError(String(err)));
-    refreshBalance();
-  }, [refreshBalance]);
+  }, []);
 
   useEffect(() => {
     refreshTransactions(filter);
-  }, [filter, refreshTransactions]);
+    refreshBalance(filter);
+  }, [filter, refreshTransactions, refreshBalance]);
 
   const handleSubmit = (input: TransactionInput) => {
     const request = editingTransaction
@@ -58,7 +83,7 @@ export function App() {
       .then(() => {
         setEditingTransaction(null);
         refreshTransactions(filter);
-        refreshBalance();
+        refreshBalance(filter);
       })
       .catch((err) => setError(String(err)));
   };
@@ -78,7 +103,7 @@ export function App() {
           setEditingTransaction(null);
         }
         refreshTransactions(filter);
-        refreshBalance();
+        refreshBalance(filter);
       })
       .catch((err) => setError(String(err)));
   };
@@ -93,24 +118,27 @@ export function App() {
       {error && <div className="error-banner">Error: {error}</div>}
 
       {balance && (
-        <div className="balance-panel">
-          <div className="balance-card balance-card--total">
-            <div className="balance-card__label">Balance</div>
-            <div
-              className={`balance-card__value ${balance.balance >= 0 ? 'is-positive' : 'is-negative'}`}
-            >
-              {currencyFormatter.format(balance.balance)}
+        <section className="balance-section">
+          <p className="balance-section__period">{formatPeriodLabel(filter)}</p>
+          <div className="balance-panel">
+            <div className="balance-card balance-card--total">
+              <div className="balance-card__label">Balance</div>
+              <div
+                className={`balance-card__value ${balance.balance >= 0 ? 'is-positive' : 'is-negative'}`}
+              >
+                {currencyFormatter.format(balance.balance)}
+              </div>
+            </div>
+            <div className="balance-card balance-card--income">
+              <div className="balance-card__label">Total Income</div>
+              <div className="balance-card__value">{currencyFormatter.format(balance.totalIncome)}</div>
+            </div>
+            <div className="balance-card balance-card--expense">
+              <div className="balance-card__label">Total Expenses</div>
+              <div className="balance-card__value">{currencyFormatter.format(balance.totalExpense)}</div>
             </div>
           </div>
-          <div className="balance-card balance-card--income">
-            <div className="balance-card__label">Total Income</div>
-            <div className="balance-card__value">{currencyFormatter.format(balance.totalIncome)}</div>
-          </div>
-          <div className="balance-card balance-card--expense">
-            <div className="balance-card__label">Total Expenses</div>
-            <div className="balance-card__value">{currencyFormatter.format(balance.totalExpense)}</div>
-          </div>
-        </div>
+        </section>
       )}
 
       <div className="card">

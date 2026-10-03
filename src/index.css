@@ -78,11 +78,21 @@ h3 {
   padding: 1.5rem;
 }
 
+.balance-section {
+  margin-bottom: 2rem;
+}
+
+.balance-section__period {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 0.6rem;
+}
+
 .balance-panel {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  margin-bottom: 2rem;
 }
 
 .balance-card {
@@ -263,6 +273,18 @@ h3 {
 
 .btn--danger:hover {
   background: var(--color-expense-soft);
+}
+
+.filters-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.period-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .filters {
